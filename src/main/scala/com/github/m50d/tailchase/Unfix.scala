@@ -1,8 +1,6 @@
 package com.github.m50d.tailchase
 
-import scalaz.Functor
-import scalaz.Leibniz
-import scalaz.Leibniz.===
+import cats.Functor
 import shapeless._
 
 /**

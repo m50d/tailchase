@@ -120,9 +120,9 @@
             <version>${scala.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.scalaz</groupId>
-            <artifactId>scalaz-core_2.11</artifactId>
-            <version>7.2.0</version>
+            <groupId>org.typelevel</groupId>
+            <artifactId>cats-core_2.11</artifactId>
+            <version>0.4.1</version>
         </dependency>
         <dependency>
             <groupId>com.chuusai</groupId>
