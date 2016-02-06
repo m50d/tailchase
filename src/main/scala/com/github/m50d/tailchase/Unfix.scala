@@ -1,6 +1,6 @@
 package com.github.m50d.tailchase
 
-import cats.Functor
+import scalaz.Functor
 import shapeless._
 
 sealed trait UnfixHelper[F, M] {
