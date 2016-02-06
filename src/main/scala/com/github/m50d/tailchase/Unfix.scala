@@ -1,13 +1,15 @@
 package com.github.m50d.tailchase
 
 import scalaz.Functor
+import scalaz.Leibniz
+import scalaz.Leibniz.===
 import shapeless._
 
 sealed trait UnfixHelper[F, M] {
   type O[A]
 
-  implicit val unfix: M =:= O[F]
-  implicit val fix: O[F] =:= M
+  implicit val unfix: M === O[F]
+  implicit val fix: O[F] === M
 
   implicit val functor: Functor[O]
 }
@@ -21,8 +23,8 @@ object UnfixHelper {
     new ProductTypeClass[UnfixHelper_[F]#O] {
       override def emptyProduct = new UnfixHelper[F, HNil] {
         override type O[A] = HNil
-        override implicit val unfix = =:=.tpEquals[HNil]
-        override implicit val fix = =:=.tpEquals[HNil]
+        override implicit val unfix = Leibniz.refl
+        override implicit val fix = Leibniz.refl
         override implicit val functor = new Functor[O] {
           override def map[A, B](fa: O[A])(f: A => B) = HNil
         }
@@ -30,7 +32,12 @@ object UnfixHelper {
       override def product[H, T <: HList](ch: UnfixHelper[F, H], ct: UnfixHelper[F, T]{ type O[A] <: HList }) =
         new UnfixHelper[F, H :: T] {
           override type O[A] = ch.O[A] :: ct.O[A]
-          override implicit val unfix = 
+          override implicit val unfix = {
+            Leibniz.lift2(ch.unfix, ct.unfix)
+          }
+          override implicit val fix = {
+            Leibniz.lift2(ch.fix, ct.fix)
+          }
       }
     
   }
@@ -47,8 +54,8 @@ object UnfixHelper {
 sealed trait Unfix[F] {
   type O[A]
 
-  implicit val unfix: F =:= O[F]
-  implicit val fix: O[F] =:= F
+  implicit val unfix: F === O[F]
+  implicit val fix: O[F] === F
 
   implicit val functor: Functor[O]
 }
