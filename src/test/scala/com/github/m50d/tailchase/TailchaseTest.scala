@@ -12,5 +12,9 @@ class TailchaseTest {
       case Inl((x: Int) :: (y: Int) :: HNil) ⇒ x + y
       case Inr(_) ⇒ 0
     }).isEqualTo(15)
+    assertThat(l.cata[String] {
+      case Inl((x: Int) :: (y: String) :: HNil) ⇒ y + x
+      case Inr(_) ⇒ ""
+    }).isEqualTo("54321")
   }
 }
