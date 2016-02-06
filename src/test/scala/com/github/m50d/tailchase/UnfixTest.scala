@@ -6,7 +6,7 @@ import org.fest.assertions.Assertions.assertThat
 
 class UnfixTest {
   @Test def unfixHelperHList(): Unit = {
-    val uh = implicitly[UnfixHelper[Int, Any, String :: Int :: HNil] {type O[A] = String :: A :: HNil}]
+    val uh = the[UnfixHelper[Int, Any, String :: Int :: HNil]]
     assertThat(uh.functor.map("Hello" :: 4 :: HNil)({i: Int => i / 2.0})).isEqualTo("Hello" :: 2.0 :: HNil)
   }
 }

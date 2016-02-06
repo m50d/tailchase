@@ -12,7 +12,7 @@ sealed trait UnfixHelper[F, +Bound, M <: Bound] {
 }
 
 trait UnfixHelper2 {
-  implicit def deriveA[F, A0]: UnfixHelper[F, Any, A0] = new UnfixHelper[F, Any, A0] {
+  implicit def deriveA[F, A0] = new UnfixHelper[F, Any, A0] {
     override type O[A] = A0
     override implicit val unfix = Leibniz.refl[A0]
     override implicit val functor = new Functor[O] {
