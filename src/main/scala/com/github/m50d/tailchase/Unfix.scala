@@ -11,8 +11,18 @@ sealed trait UnfixHelper[F, +Bound, M <: Bound] {
   implicit val functor: Functor[O]
 }
 
-trait UnfixHelper1 {
-  implicit def deriveHNil[F]: UnfixHelper[F, HNil, HNil] = new UnfixHelper[F, HNil, HNil] {
+trait UnfixHelper2 {
+  implicit def deriveA[F, A0]: UnfixHelper[F, Any, A0] = new UnfixHelper[F, Any, A0] {
+    override type O[A] = A0
+    override implicit val unfix = Leibniz.refl[A0]
+    override implicit val functor = new Functor[O] {
+      override def map[A, B](fa: O[A])(f: A => B) = fa
+    }
+  }
+}
+
+trait UnfixHelper1 extends UnfixHelper2 {
+  implicit def deriveHNil[F] = new UnfixHelper[F, HNil, HNil] {
     override type O[A] = HNil
     override implicit val unfix = Leibniz.refl[HNil]
     override implicit val functor = new Functor[O] {
@@ -20,7 +30,7 @@ trait UnfixHelper1 {
     }
   }
 
-  implicit def deriveHCons[F, H, T <: HList](implicit ch: Lazy[UnfixHelper[F, Any, H]], ct: Lazy[UnfixHelper[F, HList, T]]): UnfixHelper[F, HList, H :: T] =
+  implicit def deriveHCons[F, H, T <: HList](implicit ch: Lazy[UnfixHelper[F, Any, H]], ct: Lazy[UnfixHelper[F, HList, T]]) =
     new UnfixHelper[F, HList, H :: T] {
       override type O[A] = ch.value.O[A] :: ct.value.O[A]
       override implicit val unfix =
@@ -29,15 +39,9 @@ trait UnfixHelper1 {
         override def map[A, B](fa: O[A])(f: A => B) = ch.value.functor.map(fa.head)(f) :: ct.value.functor.map(fa.tail)(f)
       }
     }
-
-//  implicit def deriveInstance[F, G, H <: HList](implicit gen: Generic.Aux[G, H], cg: Lazy[UnfixHelper[F, HList, H]]): UnfixHelper[F, Any, G] =
-//    new UnfixHelper[F, Any, G] {
-//      override type 
-//    
-//  }
 }
 object UnfixHelper extends UnfixHelper1 {
-  implicit def unfix[F]: UnfixHelper[F, Any, F] = new UnfixHelper[F, Any, F] {
+  implicit def deriveF[F] = new UnfixHelper[F, Any, F] {
     override type O[A] = A
     override implicit val unfix = Leibniz.refl[F]
     override implicit val functor = new Functor[O] {
